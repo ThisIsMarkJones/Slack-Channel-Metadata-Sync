@@ -16,8 +16,8 @@ app.post('/slack/events', async (req, res) => {
     return res.status(200).json({ challenge: body.challenge });
   }
 
-  // ✅ Log the full incoming event for inspection
-  console.log('📥 Incoming Slack event:', JSON.stringify(body, null, 2));
+  // ✅ Log the full incoming event
+  console.log('📥 Incoming Slack event:\n', JSON.stringify(body, null, 2));
 
   // ✅ Handle channel_created event
   if (body.event && body.event.type === 'channel_created') {
@@ -30,17 +30,21 @@ app.post('/slack/events', async (req, res) => {
       channel_created_ts: String(channel?.created || Date.now())
     };
 
-    console.log('📦 Payload being sent to Slack Workflow:', payload);
+    console.log('📦 Payload being sent to Slack Workflow:\n', JSON.stringify(payload, null, 2));
 
     try {
       const response = await axios.post(WORKFLOW_TRIGGER_URL, payload);
-      console.log('✅ Sent channel info to Slack Workflow, response:', response.status);
+      console.log('✅ Slack Workflow POST response status:', response.status);
+      console.log('✅ Slack Workflow response body:\n', JSON.stringify(response.data, null, 2));
     } catch (error) {
       console.error('❌ Failed to post to Slack Workflow:', error.message);
+      if (error.response) {
+        console.error('❌ Slack responded with:\n', JSON.stringify(error.response.data, null, 2));
+      }
     }
   }
 
-  res.sendStatus(200); // Always acknowledge Slack's event
+  res.sendStatus(200); // Always respond to Slack's Events API
 });
 
 const PORT = process.env.PORT || 3000;
