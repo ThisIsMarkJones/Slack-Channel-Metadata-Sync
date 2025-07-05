@@ -5,7 +5,12 @@ const app = express();
 app.use(express.json());
 
 // ✅ Replace this with your actual Slack Workflow Trigger URL
-const WORKFLOW_TRIGGER_URL = 'https://hooks.slack.com/triggers/REPLACE_THIS';
+const WORKFLOW_TRIGGER_URL = 'https://hooks.slack.com/triggers/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';
+
+// ✅ Add GET handler for UptimeRobot or browser checks
+app.get('/slack/events', (req, res) => {
+  res.status(200).send('👋 Slack webhook listener is alive!');
+});
 
 app.post('/slack/events', async (req, res) => {
   const body = req.body;
